@@ -4,44 +4,8 @@ def _tc(v, n_bit=16):
     mask = 2**(n_bit - 1)
     return -(v & mask) + (v & ~mask)
 
-BME280_I2CADDR = 0x76
-
-BME280_REGISTER_DIG_T1          = 0x88
-BME280_REGISTER_DIG_T2          = 0x8A
-BME280_REGISTER_DIG_T3          = 0x8C
-
-BME280_REGISTER_DIG_P1          = 0x8E
-BME280_REGISTER_DIG_P2          = 0x90
-BME280_REGISTER_DIG_P3          = 0x92
-BME280_REGISTER_DIG_P4          = 0x94
-BME280_REGISTER_DIG_P5          = 0x96
-BME280_REGISTER_DIG_P6          = 0x98
-BME280_REGISTER_DIG_P7          = 0x9A
-BME280_REGISTER_DIG_P8          = 0x9C
-BME280_REGISTER_DIG_P9          = 0x9E
-
-BME280_REGISTER_DIG_H1          = 0xA1
-BME280_REGISTER_DIG_H2          = 0xE1
-BME280_REGISTER_DIG_H3          = 0xE3
-BME280_REGISTER_DIG_H4          = 0xE4
-BME280_REGISTER_DIG_H5          = 0xE5
-BME280_REGISTER_DIG_H6          = 0xE7
-
-BME280_REGISTER_CHIPID          = 0xD0
-BME280_REGISTER_VERSION         = 0xD1
-BME280_REGISTER_SOFTRESET       = 0xE0
-
-BME280_REGISTER_CONTROLHUMID    = 0xF2
-BME280_REGISTER_STATUS          = 0XF3
-BME280_REGISTER_CONTROL         = 0xF4
-BME280_REGISTER_CONFIG          = 0xF5
-BME280_REGISTER_PRESSUREDATA    = 0xF7
-BME280_REGISTER_TEMPDATA        = 0xFA
-BME280_REGISTER_HUMIDDATA       = 0xFD
-
-
 class xSW01:
-    def __init__(self, addr=BME280_I2CADDR):
+    def __init__(self, addr=0x76):
         self.i2c = xCore()
         self.addr = addr
         self._read_coeff()
@@ -58,29 +22,29 @@ class xSW01:
 
         filter = filter & 7
 
-        self.i2c.write_bytes(self.addr, BME280_REGISTER_CONTROLHUMID, os_h)
-        self.i2c.write_bytes(self.addr, BME280_REGISTER_CONTROL, (os_t << 5) | (os_p << 2) | mode )
-        self.i2c.write_bytes(self.addr, BME280_REGISTER_CONFIG, (t_sb << 5) | (filter << 2) )
+        self.i2c.write_bytes(self.addr, 0xF2, os_h)
+        self.i2c.write_bytes(self.addr, 0xF4, (os_t << 5) | (os_p << 2) | mode )
+        self.i2c.write_bytes(self.addr, 0xF5, (t_sb << 5) | (filter << 2) )
 
     def _read_coeff(self):
-        dig_T1 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_T1,2)
-        dig_T2 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_T2,2)
-        dig_T3 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_T3,2)
+        dig_T1 = self.i2c.write_read(self.addr, 0x88,2)
+        dig_T2 = self.i2c.write_read(self.addr, 0x8A,2)
+        dig_T3 = self.i2c.write_read(self.addr, 0x8C,2)
 
         self.dig_T1 = dig_T1[0] | (dig_T1[1]<<8)
         self.dig_T2 = _tc(dig_T2[0] | (dig_T2[1]<<8))
         self.dig_T3 = _tc(dig_T3[0] | (dig_T3[1]<<8))
 
 
-        dig_P1 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P1,2)
-        dig_P2 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P2,2)
-        dig_P3 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P3,2)
-        dig_P4 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P4,2)
-        dig_P5 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P5,2)
-        dig_P6 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P6,2)
-        dig_P7 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P7,2)
-        dig_P8 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P8,2)
-        dig_P9 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_P9,2)
+        dig_P1 = self.i2c.write_read(self.addr, 0x8E,2)
+        dig_P2 = self.i2c.write_read(self.addr, 0x90,2)
+        dig_P3 = self.i2c.write_read(self.addr, 0x92,2)
+        dig_P4 = self.i2c.write_read(self.addr, 0x94,2)
+        dig_P5 = self.i2c.write_read(self.addr, 0x96,2)
+        dig_P6 = self.i2c.write_read(self.addr, 0x98,2)
+        dig_P7 = self.i2c.write_read(self.addr, 0x9A,2)
+        dig_P8 = self.i2c.write_read(self.addr, 0x9C,2)
+        dig_P9 = self.i2c.write_read(self.addr, 0x9E,2)
 
         self.dig_P1 = dig_P1[0] | (dig_P1[1]<<8)
         self.dig_P2 = _tc(dig_P2[0] | (dig_P2[1]<<8))
@@ -93,12 +57,12 @@ class xSW01:
         self.dig_P9 = _tc(dig_P9[0] | (dig_P9[1]<<8))
 
 
-        dig_H1 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_H1,1)
-        dig_H2 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_H2,2)
-        dig_H3 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_H3,1)
-        dig_H4 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_H4,2)
-        dig_H5 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_H5,2)
-        dig_H6 = self.i2c.write_read(self.addr, BME280_REGISTER_DIG_H6,1)
+        dig_H1 = self.i2c.write_read(self.addr, 0xA1,1)
+        dig_H2 = self.i2c.write_read(self.addr, 0xE1,2)
+        dig_H3 = self.i2c.write_read(self.addr, 0xE3,1)
+        dig_H4 = self.i2c.write_read(self.addr, 0xE4,2)
+        dig_H5 = self.i2c.write_read(self.addr, 0xE5,2)
+        dig_H6 = self.i2c.write_read(self.addr, 0xE7,1)
 
         self.dig_H1 = dig_H1[0]
         self.dig_H2 = _tc(dig_H2[0] | (dig_H2[1]<<8))
@@ -165,50 +129,24 @@ class xSW01:
         return p/100
 
     def get_raw_temp(self):
-        r = self.i2c.write_read(self.addr, BME280_REGISTER_TEMPDATA,3)
+        r = self.i2c.write_read(self.addr, 0xFA,3)
         adc_t = (r[0]<<16) | (r[1] <<8) | r[2]
         adc_t = adc_t>>4
         return adc_t
 
     def get_raw_hum(self):
-        r = self.i2c.write_read(self.addr, BME280_REGISTER_HUMIDDATA,2)
+        r = self.i2c.write_read(self.addr, 0xFD,2)
         adc_h = (r[0]<<8) | r[1]
         return adc_h
 
     def get_raw_pres(self):
-        r = self.i2c.write_read(self.addr, BME280_REGISTER_PRESSUREDATA,3)
+        r = self.i2c.write_read(self.addr, 0xF7,3)
         adc_p = (r[0] << 16) | (r[1] << 8) | r[2]
         adc_p = adc_p >> 4
         return adc_p
 
-
-    def getTempC(self):
-        adc_t = self.get_raw_temp()
-        t = self._calc_temp(adc_t)
-
-        return t
-
-    def getTempF(self):
-        return (1.8*self.getTempC()) + 32
-
-    def getHumidity(self):
-        self.getTempC()
-        adc_h = self.get_raw_hum()
-        h = self._calc_hum(adc_h)
-
-        return h
-
-
-    def getPressure(self):
-        self.getTempC()
-        adc_p = self.get_raw_pres()
-        p = self._calc_pres(adc_p)
-
-        return p
-
-
     def values(self):
-        r = self.i2c.write_read(self.addr, BME280_REGISTER_PRESSUREDATA,8)
+        r = self.i2c.write_read(self.addr, 0xF7,8)
 
         adc_t = (r[3]<<16) | (r[4] <<8) | r[5]
         adc_t = adc_t>>4
@@ -219,19 +157,3 @@ class xSW01:
         adc_p = adc_p >> 4
 
         return (self._calc_temp(adc_t), self._calc_hum(adc_h), self._calc_pres(adc_p))
-
-
-    def soft_reset(self):
-        self.i2c.write(self.addr, BME280_REGISTER_SOFTRESET, 0xB6)
-
-
-    def get_status(self):
-        r = self.i2c.write_read(self.addr, BME280_REGISTER_STATUS,1)
-        measuring = (r[0] >> 3) & 1
-        update = r[0] & 1
-        return (measuring,update)
-
-
-    def get_chip_id(self):
-        r = self.i2c.write_read(self.addr, BME280_REGISTER_CHIPID,1)
-        print(r[0])
