@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="xinabox-SW01",
-    version="0.0.3",
+    version="0.0.4",
     author="Luqmaan Baboo",
     author_email="luqmaanbaboo@gmail.com",
     description="BME280 Environmental Sensor",
@@ -12,6 +12,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/xinabox/Python-SW01",
     install_requires = ["xinabox-CORE",],
+    py_modules=["xSW01",],
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
