@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="xinabox-SW01",
-    version="0.0.4",
+    version="0.0.5",
     author="Luqmaan Baboo",
     author_email="luqmaanbaboo@gmail.com",
     description="BME280 Environmental Sensor",
